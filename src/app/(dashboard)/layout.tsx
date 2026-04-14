@@ -16,6 +16,7 @@ import {
   FlaskConical,
   Sun,
   Moon,
+  BookOpen,
 } from 'lucide-react'
 
 // Mobile bottom nav only shows 5 items (테스트 and 히스토리 omitted)
@@ -50,6 +51,7 @@ const baseNavItems = [
   { href: '/tasks', label: '할일', icon: CheckSquare },
   { href: '/insights', label: '인사이트', icon: BarChart3 },
   { href: '/history', label: '히스토리', icon: Clock },
+  { href: '/diary', label: '일기', icon: BookOpen },
   { href: '/settings', label: '설정', icon: Settings },
 ]
 
