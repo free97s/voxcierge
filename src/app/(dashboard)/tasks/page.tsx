@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import Link from 'next/link'
-import { MicIcon, PlusIcon, SearchIcon } from 'lucide-react'
+import { PlusIcon, SearchIcon } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -192,15 +191,6 @@ export default function TasksPage() {
           </TabsContent>
         ))}
       </Tabs>
-
-      {/* Floating mic button */}
-      <Link
-        href="/capture"
-        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring"
-        aria-label="음성으로 할 일 추가"
-      >
-        <MicIcon className="h-6 w-6" />
-      </Link>
 
       {/* Dialogs */}
       <CreateTaskDialog

@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
 } from 'lucide-react'
+import { VoiceAssistantModal } from '@/components/voice/VoiceAssistantModal'
 
 // Mobile bottom nav only shows 5 items (테스트 and 히스토리 omitted)
 const mobileNavItems = [
@@ -159,7 +160,13 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [voiceOpen, setVoiceOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+
+  // Hide FAB on settings pages and the capture page (which has its own recording UI)
+  const showFab =
+    !pathname.startsWith('/settings') &&
+    !pathname.startsWith('/capture')
 
   function toggleTheme() {
     setTheme(theme === 'dark' ? 'light' : 'dark')
@@ -312,6 +319,31 @@ export default function DashboardLayout({
           })}
         </nav>
       </div>
+
+      {/* Global voice assistant FAB */}
+      {showFab && (
+        <>
+          <button
+            onClick={() => setVoiceOpen(true)}
+            aria-label="음성 어시스턴트"
+            className={cn(
+              'fixed bottom-20 right-4 md:bottom-6 md:right-6',
+              'flex h-14 w-14 items-center justify-center rounded-full',
+              'bg-primary text-primary-foreground shadow-lg',
+              'transition-transform hover:scale-110',
+              'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring',
+              'motion-safe:animate-pulse',
+            )}
+          >
+            <Mic className="h-6 w-6" />
+          </button>
+
+          <VoiceAssistantModal
+            open={voiceOpen}
+            onOpenChange={setVoiceOpen}
+          />
+        </>
+      )}
     </div>
   )
 }
