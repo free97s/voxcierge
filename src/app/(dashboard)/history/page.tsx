@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Mic, Clock, ChevronDown, ChevronUp, Trash2, Loader2, FileText } from 'lucide-react'
+import Link from 'next/link'
+import { Mic, Clock, ChevronDown, ChevronUp, Trash2, Loader2, FileText, RefreshCw } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Card,
   CardContent,
@@ -20,6 +22,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
+import { buttonVariants } from '@/components/ui/button'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -94,6 +97,7 @@ function SessionCard({
     const { error } = await supabase.from('voice_sessions').delete().eq('id', session.id)
     if (error) {
       console.error('[HistoryPage] delete error:', error.message)
+      toast.error('삭제에 실패했습니다. 다시 시도해 주세요.')
       setIsDeleting(false)
       setShowDeleteDialog(false)
       return
@@ -167,7 +171,7 @@ function SessionCard({
             </div>
           )}
 
-          <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
             <Button
               variant="ghost"
               size="sm"
@@ -220,9 +224,11 @@ export default function HistoryPage() {
   const [hasMore, setHasMore] = useState(false)
   const [page, setPage] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const fetchSessions = useCallback(async (pageIndex: number, append = false) => {
     try {
+    setLoadError(null)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -245,6 +251,7 @@ export default function HistoryPage() {
       .range(from, to)
 
     if (fetchError) {
+      setLoadError('음성 기록을 불러오는데 실패했습니다.')
       setIsLoading(false)
       setIsLoadingMore(false)
       return
@@ -267,6 +274,7 @@ export default function HistoryPage() {
     setIsLoading(false)
     setIsLoadingMore(false)
     } catch {
+      setLoadError('음성 기록을 불러오는데 실패했습니다.')
       setIsLoading(false)
       setIsLoadingMore(false)
     }
@@ -300,19 +308,46 @@ export default function HistoryPage() {
         )}
       </div>
 
+      <div aria-live="polite" aria-atomic="true">
+        {loadError && (
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-5 text-center space-y-3">
+            <p className="text-sm text-destructive">{loadError}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setIsLoading(true)
+                void fetchSessions(0)
+              }}
+              className="gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              다시 시도
+            </Button>
+          </div>
+        )}
+      </div>
+
       {isLoading ? (
         <div className="flex items-center justify-center h-48">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
-      ) : sessions.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-16 text-center">
+      ) : !loadError && sessions.length === 0 ? (
+        <div className="rounded-lg border border-dashed px-4 py-16 text-center space-y-3">
           <Mic className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
           <p className="text-sm font-medium">아직 음성 기록이 없습니다</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Supabase 연결 후 음성 기록이 표시됩니다
+            음성 녹음을 시작해 보세요
           </p>
+          <Link
+            href="/capture"
+            className={buttonVariants({ variant: 'outline', size: 'sm' }) + ' gap-2 mt-2'}
+          >
+            <Mic className="h-4 w-4" />
+            음성 녹음하기
+          </Link>
         </div>
-      ) : (
+      ) : !loadError ? (
         <>
           <div className="space-y-3">
             {sessions.map((session) => (
@@ -337,7 +372,7 @@ export default function HistoryPage() {
             </>
           )}
         </>
-      )}
+      ) : null}
     </div>
   )
 }

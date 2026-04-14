@@ -186,6 +186,7 @@ export default function TasksPage() {
               tasks={filtered}
               isLoading={isLoading}
               emptyMessage={emptyMessages[key]}
+              showCaptureCta={key === 'all'}
               onCheckin={(task) => setCheckinTask(task)}
             />
           </TabsContent>

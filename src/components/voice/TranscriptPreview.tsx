@@ -28,7 +28,7 @@ export function TranscriptPreview({ interimText, finalText, isListening }: Trans
         {isListening && (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+              <span className="absolute inline-flex h-full w-full motion-safe:animate-ping rounded-full bg-red-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
             </span>
             듣는 중
@@ -55,7 +55,7 @@ export function TranscriptPreview({ interimText, finalText, isListening }: Trans
               <span
                 className={cn(
                   'font-light italic text-muted-foreground',
-                  isListening && 'animate-pulse'
+                  isListening && 'motion-safe:animate-pulse'
                 )}
               >
                 {interimText}

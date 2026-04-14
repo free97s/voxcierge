@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { formatDistanceToNow, isPast, isToday, isTomorrow } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { CalendarIcon, MapPinIcon, UserIcon } from 'lucide-react'
@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Task, TaskStatus, TaskPriority } from '@/types/task'
+
+// TaskCard uses a Link wrapper for semantic navigation instead of div+onClick
 
 // ---------------------------------------------------------------------------
 // Status config
@@ -61,26 +63,20 @@ export interface TaskCardProps {
 // Component
 // ---------------------------------------------------------------------------
 export function TaskCard({ task, onStatusChange, onEdit, onCheckin }: TaskCardProps) {
-  const router = useRouter()
   const status = statusConfig[task.status]
   const priority = priorityConfig[task.priority]
   const due = task.dueAt ? formatDueDate(task.dueAt) : null
   const isCompleted = task.status === 'completed' || task.status === 'cancelled'
 
-  function handleCardClick() {
-    router.push(`/tasks/${task.id}`)
-  }
-
   function handleActionClick(e: React.MouseEvent, fn?: (t: Task) => void) {
+    e.preventDefault()
     e.stopPropagation()
     fn?.(task)
   }
 
   return (
-    <Card
-      className="cursor-pointer transition-shadow hover:shadow-md active:shadow-sm"
-      onClick={handleCardClick}
-    >
+    <Card className="transition-shadow hover:shadow-md active:shadow-sm">
+      <Link href={`/tasks/${task.id}`} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl">
       <CardContent className="py-3 px-4">
         <div className="flex items-start gap-3">
           {/* Priority indicator strip */}
@@ -210,6 +206,7 @@ export function TaskCard({ task, onStatusChange, onEdit, onCheckin }: TaskCardPr
           </div>
         </div>
       </CardContent>
+      </Link>
     </Card>
   )
 }
