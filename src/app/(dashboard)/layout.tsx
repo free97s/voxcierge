@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { DailyCheckinDialog } from '@/components/checkin/DailyCheckinDialog'
+import { DailyWrapUpDialog } from '@/components/checkin/DailyWrapUpDialog'
+import { useSmartCheckin } from '@/hooks/useSmartCheckin'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import {
@@ -168,6 +171,17 @@ export default function DashboardLayout({
     !pathname.startsWith('/settings') &&
     !pathname.startsWith('/capture')
 
+  const {
+    needsCheckin,
+    pendingTasks,
+    completeCheckin,
+    needsWrapUp,
+    todayStats,
+    wrapUpPendingTasks,
+    completeWrapUp,
+    isLoading: checkinLoading,
+  } = useSmartCheckin()
+
   function toggleTheme() {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
@@ -180,6 +194,22 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
+      {/* Smart check-in dialogs — rendered above page content */}
+      {!checkinLoading && needsCheckin && (
+        <DailyCheckinDialog
+          open={needsCheckin}
+          tasks={pendingTasks}
+          onComplete={completeCheckin}
+        />
+      )}
+      {!checkinLoading && !needsCheckin && needsWrapUp && (
+        <DailyWrapUpDialog
+          open={needsWrapUp}
+          stats={todayStats}
+          pendingTasks={wrapUpPendingTasks}
+          onComplete={completeWrapUp}
+        />
+      )}
       {/* Desktop Sidebar */}
       <aside className="hidden w-60 shrink-0 border-r bg-card md:flex md:flex-col">
         <SidebarContent pathname={pathname} />
