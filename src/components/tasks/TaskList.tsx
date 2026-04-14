@@ -1,6 +1,8 @@
 'use client'
 
-import { ClipboardListIcon } from 'lucide-react'
+import Link from 'next/link'
+import { ClipboardListIcon, MicIcon } from 'lucide-react'
+import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TaskCard, type TaskCardProps } from './TaskCard'
 import type { Task } from '@/types/task'
@@ -30,11 +32,20 @@ function TaskSkeleton() {
 // ---------------------------------------------------------------------------
 // Empty state
 // ---------------------------------------------------------------------------
-function EmptyState({ message }: { message: string }) {
+function EmptyState({ message, showCaptureCta }: { message: string; showCaptureCta?: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-4 py-14 text-center">
       <ClipboardListIcon className="h-9 w-9 text-muted-foreground/50" />
       <p className="text-sm text-muted-foreground">{message}</p>
+      {showCaptureCta && (
+        <Link
+          href="/capture"
+          className={buttonVariants({ variant: 'outline', size: 'sm' }) + ' gap-2 mt-1'}
+        >
+          <MicIcon className="h-4 w-4" />
+          음성으로 추가
+        </Link>
+      )}
     </div>
   )
 }
@@ -46,6 +57,7 @@ export interface TaskListProps {
   tasks: Task[]
   isLoading?: boolean
   emptyMessage?: string
+  showCaptureCta?: boolean
   onStatusChange?: TaskCardProps['onStatusChange']
   onEdit?: TaskCardProps['onEdit']
   onCheckin?: TaskCardProps['onCheckin']
@@ -58,6 +70,7 @@ export function TaskList({
   tasks,
   isLoading = false,
   emptyMessage = '할 일이 없습니다.',
+  showCaptureCta = false,
   onStatusChange,
   onEdit,
   onCheckin,
@@ -73,7 +86,7 @@ export function TaskList({
   }
 
   if (tasks.length === 0) {
-    return <EmptyState message={emptyMessage} />
+    return <EmptyState message={emptyMessage} showCaptureCta={showCaptureCta} />
   }
 
   return (

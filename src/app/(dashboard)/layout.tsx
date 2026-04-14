@@ -17,6 +17,15 @@ import {
   Sun,
   Moon,
 } from 'lucide-react'
+
+// Mobile bottom nav only shows 5 items (테스트 and 히스토리 omitted)
+const mobileNavItems = [
+  { href: '/home', label: '홈', icon: Home },
+  { href: '/capture', label: '음성캡처', icon: Mic },
+  { href: '/tasks', label: '할일', icon: CheckSquare },
+  { href: '/insights', label: '인사이트', icon: BarChart3 },
+  { href: '/settings', label: '설정', icon: Settings },
+]
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -113,7 +122,10 @@ function SidebarContent({
     <div className="flex h-full flex-col gap-0">
       {/* Logo */}
       <div className="flex h-14 items-center border-b px-4 gap-2 shrink-0">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
+        <div
+          className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm"
+          aria-label="VoxCierge"
+        >
           V
         </div>
         <span className="font-bold text-lg tracking-tight">VoxCierge</span>
@@ -195,7 +207,10 @@ export default function DashboardLayout({
 
             {/* Mobile branding */}
             <div className="flex items-center gap-2 md:hidden">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm"
+                aria-label="VoxCierge"
+              >
                 V
               </div>
               <span className="font-bold tracking-tight">VoxCierge</span>
@@ -275,7 +290,7 @@ export default function DashboardLayout({
 
         {/* Mobile bottom nav */}
         <nav className="flex border-t bg-card md:hidden shrink-0">
-          {navItems.map((item) => {
+          {mobileNavItems.map((item) => {
             const Icon = item.icon
             const active =
               pathname === item.href || pathname.startsWith(item.href + '/')

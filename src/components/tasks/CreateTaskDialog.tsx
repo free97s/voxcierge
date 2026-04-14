@@ -173,9 +173,11 @@ export function CreateTaskDialog({ isOpen, onClose, onCreated }: CreateTaskDialo
               onChange={(e) => set('title', e.target.value)}
               aria-invalid={!!errors.title}
             />
-            {errors.title && (
-              <p className="text-xs text-destructive">{errors.title}</p>
-            )}
+            <div aria-live="polite" aria-atomic="true">
+              {errors.title && (
+                <p className="text-xs text-destructive">{errors.title}</p>
+              )}
+            </div>
           </div>
 
           {/* Description */}

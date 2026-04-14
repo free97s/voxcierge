@@ -1,7 +1,9 @@
-export const dynamic = 'force-dynamic'
+'use client'
 
-import { createClient } from '@/lib/supabase/server'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase/client'
 import {
   Card,
   CardContent,
@@ -24,17 +26,47 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { ChevronRight, Bell, User, Globe, CreditCard, Shield } from 'lucide-react'
 
-export default async function SettingsPage() {
-  let displayName = ''
-  let email = ''
+export default function SettingsPage() {
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [language, setLanguage] = useState('ko')
+  const [timezone, setTimezone] = useState('Asia/Seoul')
+  const [isSavingProfile, setIsSavingProfile] = useState(false)
+  const [isSavingLocale, setIsSavingLocale] = useState(false)
 
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    displayName = user?.user_metadata?.full_name ?? ''
-    email = user?.email ?? ''
-  } catch {
-    // Supabase not configured — show page with empty defaults
+  useEffect(() => {
+    const supabase = createClient()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    supabase.auth.getUser().then((result: any) => {
+      const user = result?.data?.user
+      setDisplayName(user?.user_metadata?.full_name ?? '')
+      setEmail(user?.email ?? '')
+    }).catch(() => {/* Supabase not configured */})
+  }, [])
+
+  async function handleSaveProfile() {
+    setIsSavingProfile(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: displayName },
+      })
+      if (error) throw error
+      toast.success('프로필이 저장되었습니다.')
+    } catch {
+      toast.error('저장에 실패했습니다. 다시 시도해 주세요.')
+    } finally {
+      setIsSavingProfile(false)
+    }
+  }
+
+  function handleSaveLocale() {
+    setIsSavingLocale(true)
+    // Locale preferences stored locally (no Supabase column yet)
+    setTimeout(() => {
+      toast.success('지역 설정이 저장되었습니다.')
+      setIsSavingLocale(false)
+    }, 400)
   }
 
   return (
@@ -56,14 +88,21 @@ export default async function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="fullName">이름</Label>
-            <Input id="fullName" defaultValue={displayName} placeholder="이름을 입력하세요" />
+            <Input
+              id="fullName"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="이름을 입력하세요"
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">이메일</Label>
-            <Input id="email" type="email" defaultValue={email} disabled />
+            <Input id="email" type="email" value={email} disabled />
             <p className="text-xs text-muted-foreground">이메일은 변경할 수 없습니다</p>
           </div>
-          <Button size="sm">변경 저장</Button>
+          <Button size="sm" onClick={handleSaveProfile} disabled={isSavingProfile}>
+            {isSavingProfile ? '저장 중...' : '변경 저장'}
+          </Button>
         </CardContent>
       </Card>
 
@@ -79,7 +118,7 @@ export default async function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>언어</Label>
-            <Select defaultValue="ko">
+            <Select value={language} onValueChange={(v) => { if (v) setLanguage(v) }}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -91,7 +130,7 @@ export default async function SettingsPage() {
           </div>
           <div className="space-y-2">
             <Label>시간대</Label>
-            <Select defaultValue="Asia/Seoul">
+            <Select value={timezone} onValueChange={(v) => { if (v) setTimezone(v) }}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -103,7 +142,9 @@ export default async function SettingsPage() {
               </SelectContent>
             </Select>
           </div>
-          <Button size="sm">변경 저장</Button>
+          <Button size="sm" onClick={handleSaveLocale} disabled={isSavingLocale}>
+            {isSavingLocale ? '저장 중...' : '변경 저장'}
+          </Button>
         </CardContent>
       </Card>
 

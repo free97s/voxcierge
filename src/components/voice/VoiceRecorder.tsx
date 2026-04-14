@@ -156,8 +156,8 @@ export function VoiceRecorder() {
         <div className="relative flex items-center justify-center">
           {isRecording && (
             <>
-              <span className="absolute inset-[-4px] rounded-full bg-destructive/25 animate-ping" />
-              <span className="absolute inset-[-14px] rounded-full bg-destructive/10 animate-ping [animation-delay:200ms]" />
+              <span className="absolute inset-[-4px] rounded-full bg-destructive/25 motion-safe:animate-ping" />
+              <span className="absolute inset-[-14px] rounded-full bg-destructive/10 motion-safe:animate-ping [animation-delay:200ms]" />
             </>
           )}
 
@@ -289,11 +289,13 @@ export function VoiceRecorder() {
       )}
 
       {/* ── Error message ── */}
-      {error && (
-        <div className="w-full rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+      <div aria-live="polite" aria-atomic="true">
+        {error && (
+          <div className="w-full rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+      </div>
 
       {/* ── Intent result card ── */}
       {isResult && intent && (
