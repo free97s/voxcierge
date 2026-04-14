@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Mic, Clock, ChevronDown, ChevronUp, Trash2, Loader2, AlertCircle, FileText } from 'lucide-react'
+import { Mic, Clock, ChevronDown, ChevronUp, Trash2, Loader2, FileText } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -219,10 +219,10 @@ export default function HistoryPage() {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(false)
   const [page, setPage] = useState(0)
-  const [error, setError] = useState('')
   const [totalCount, setTotalCount] = useState(0)
 
   const fetchSessions = useCallback(async (pageIndex: number, append = false) => {
+    try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -245,7 +245,6 @@ export default function HistoryPage() {
       .range(from, to)
 
     if (fetchError) {
-      setError('음성 기록을 불러오지 못했습니다.')
       setIsLoading(false)
       setIsLoadingMore(false)
       return
@@ -267,6 +266,10 @@ export default function HistoryPage() {
     setHasMore((count ?? 0) > (pageIndex + 1) * PAGE_SIZE)
     setIsLoading(false)
     setIsLoadingMore(false)
+    } catch {
+      setIsLoading(false)
+      setIsLoadingMore(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -301,29 +304,12 @@ export default function HistoryPage() {
         <div className="flex items-center justify-center h-48">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
-      ) : error ? (
-        <div className="rounded-lg border border-destructive/30 px-4 py-10 text-center">
-          <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
-          <p className="text-sm font-medium text-destructive">{error}</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-4"
-            onClick={() => {
-              setError('')
-              setIsLoading(true)
-              void fetchSessions(0)
-            }}
-          >
-            다시 시도
-          </Button>
-        </div>
       ) : sessions.length === 0 ? (
         <div className="rounded-lg border border-dashed px-4 py-16 text-center">
           <Mic className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
           <p className="text-sm font-medium">아직 음성 기록이 없습니다</p>
           <p className="text-xs text-muted-foreground mt-1">
-            음성 캡처 페이지에서 첫 번째 할 일을 등록해 보세요
+            Supabase 연결 후 음성 기록이 표시됩니다
           </p>
         </div>
       ) : (

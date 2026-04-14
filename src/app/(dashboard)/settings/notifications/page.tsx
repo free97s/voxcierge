@@ -60,18 +60,22 @@ export default function NotificationsPage() {
   // Load saved settings from profile
   useEffect(() => {
     void (async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('briefing_settings')
-        .eq('id', user.id)
-        .maybeSingle()
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('briefing_settings')
+          .eq('id', user.id)
+          .maybeSingle()
 
-      if (profile?.briefing_settings) {
-        setSettings({ ...DEFAULT_SETTINGS, ...(profile.briefing_settings as Partial<BriefingSettings>) })
+        if (profile?.briefing_settings) {
+          setSettings({ ...DEFAULT_SETTINGS, ...(profile.briefing_settings as Partial<BriefingSettings>) })
+        }
+      } catch {
+        // Supabase not configured — use DEFAULT_SETTINGS
       }
     })()
   }, [])

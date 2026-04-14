@@ -25,13 +25,17 @@ import { Badge } from '@/components/ui/badge'
 import { ChevronRight, Bell, User, Globe, CreditCard, Shield } from 'lucide-react'
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let displayName = ''
+  let email = ''
 
-  const displayName = user?.user_metadata?.full_name ?? ''
-  const email = user?.email ?? ''
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    displayName = user?.user_metadata?.full_name ?? ''
+    email = user?.email ?? ''
+  } catch {
+    // Supabase not configured — show page with empty defaults
+  }
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-2xl mx-auto">

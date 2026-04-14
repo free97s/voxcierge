@@ -13,7 +13,6 @@ function isPublicRoute(pathname: string): boolean {
 function isProtectedRoute(pathname: string): boolean {
   if (pathname.startsWith('/(dashboard)') || pathname.match(/^\/(dashboard)/)) return true
   if (pathname.startsWith('/api/')) return true
-  // App Router dashboard routes (without the group segment in URL)
   if (
     pathname.startsWith('/home') ||
     pathname.startsWith('/capture') ||
@@ -26,10 +25,26 @@ function isProtectedRoute(pathname: string): boolean {
   return false
 }
 
+function isSupabaseConfigured(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+  return (
+    url.length > 0 &&
+    key.length > 0 &&
+    !url.includes('placeholder') &&
+    !key.includes('placeholder')
+  )
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (isPublicRoute(pathname)) {
+    return NextResponse.next({ request })
+  }
+
+  // Supabase 미설정 시 인증 우회 — 모든 페이지 접근 허용
+  if (!isSupabaseConfigured()) {
     return NextResponse.next({ request })
   }
 

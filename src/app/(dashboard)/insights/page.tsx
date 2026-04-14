@@ -101,7 +101,8 @@ export default function InsightsPage() {
       setInsight(data.insight ? mapDbInsight(data.insight) : null)
       setNeedsGeneration(data.needsGeneration)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '인사이트를 불러오지 못했습니다')
+      console.error('[InsightsPage] fetch error:', err)
+      setNeedsGeneration(true)
     } finally {
       setIsLoading(false)
     }

@@ -42,7 +42,11 @@ function useTaskStats() {
           data: { user },
         } = await supabase.auth.getUser()
 
-        if (!user) return
+        if (!user) {
+          setDisplayName('데모 사용자')
+          setStats({ pending: 3, inProgress: 1, completed: 2, overdue: [] })
+          return
+        }
 
         const name =
           user.user_metadata?.full_name ??

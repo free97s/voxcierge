@@ -56,14 +56,16 @@ export default function TasksPage() {
   // Fetch user for realtime subscription
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }: { data: { user: { id: string } | null } }) => {
-      setUserId(data.user?.id ?? null)
-    })
+    supabase.auth.getUser()
+      .then(({ data }: { data: { user: { id: string } | null } }) => {
+        setUserId(data.user?.id ?? null)
+      })
+      .catch(() => { /* no user — stay null */ })
   }, [])
 
   // Fetch tasks on mount
   useEffect(() => {
-    fetchTasks({ limit: 100 })
+    fetchTasks({ limit: 100 }).catch(() => { /* API unavailable — store stays empty */ })
   }, [fetchTasks])
 
   // Realtime subscription

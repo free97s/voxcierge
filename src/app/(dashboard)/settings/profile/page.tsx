@@ -110,25 +110,29 @@ export default function ProfilePage() {
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
 
   const loadProfile = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
-    setUserId(user.id)
-    setEmail(user.email ?? '')
+      setUserId(user.id)
+      setEmail(user.email ?? '')
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('full_name, avatar_url, timezone, locale')
-      .eq('id', user.id)
-      .maybeSingle()
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url, timezone, locale')
+        .eq('id', user.id)
+        .maybeSingle()
 
-    if (profile) {
-      setFullName(profile.full_name ?? '')
-      setAvatarUrl(profile.avatar_url ?? '')
-      setTimezone(profile.timezone ?? 'Asia/Seoul')
-      setLocale(profile.locale ?? 'ko')
-    } else {
-      setFullName(user.user_metadata?.full_name ?? '')
+      if (profile) {
+        setFullName(profile.full_name ?? '')
+        setAvatarUrl(profile.avatar_url ?? '')
+        setTimezone(profile.timezone ?? 'Asia/Seoul')
+        setLocale(profile.locale ?? 'ko')
+      } else {
+        setFullName(user.user_metadata?.full_name ?? '')
+      }
+    } catch {
+      // Supabase not configured — leave fields at default empty values
     }
   }, [supabase])
 

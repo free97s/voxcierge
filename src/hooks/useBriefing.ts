@@ -71,10 +71,13 @@ export function useBriefing(): UseBriefingReturn {
         error: null,
       })
     } catch (err) {
+      console.error('[useBriefing] fetch error:', err)
       setState((prev) => ({
         ...prev,
+        briefing: null,
+        needsGeneration: true,
         isLoading: false,
-        error: err instanceof Error ? err.message : '브리핑을 불러오지 못했습니다',
+        error: null,
       }))
     }
   }, [])
