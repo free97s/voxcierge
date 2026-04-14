@@ -24,7 +24,7 @@ export default function PrivacyPage() {
         <div className="prose prose-sm max-w-none text-sm leading-relaxed space-y-8 text-foreground">
 
           <div className="rounded-xl bg-muted/50 p-4 text-muted-foreground text-sm">
-            VoxCierge(이하 &ldquo;회사&rdquo;)는 「개인정보 보호법」 및 관련 법령에 따라 이용자의 개인정보를 보호하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보처리방침을 수립·공개합니다.
+            주식회사 스터닝박스(이하 &ldquo;회사&rdquo;)는 「개인정보 보호법」 및 관련 법령에 따라 이용자의 개인정보를 보호하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보처리방침을 수립·공개합니다.
           </div>
 
           <section>
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-bold mb-3">제3조 (음성 데이터 특별 처리 조항)</h2>
-            <p className="text-muted-foreground mb-3">VoxCierge는 음성 데이터를 다음과 같이 특별히 처리합니다.</p>
+            <p className="text-muted-foreground mb-3">회사는 VoxCierge 서비스의 음성 데이터를 다음과 같이 특별히 처리합니다.</p>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
               <li>음성 파일은 AES-256 암호화 방식으로 저장됩니다.</li>
               <li>음성 데이터는 텍스트 전사 및 AI 의도 분석 목적으로만 처리됩니다.</li>
@@ -165,15 +165,17 @@ export default function PrivacyPage() {
               <li>개인정보 이동권 (데이터 내보내기)</li>
             </ul>
             <p className="text-muted-foreground mt-2">
-              권리 행사는 설정 &gt; 계정 메뉴 또는 support@voxcierge.com으로 요청하실 수 있습니다.
+              권리 행사는 설정 &gt; 계정 메뉴 또는 recollect@hawoolab.app으로 요청하실 수 있습니다.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold mb-3">제8조 (개인정보 보호책임자)</h2>
             <div className="text-muted-foreground">
-              <p>개인정보 보호책임자: VoxCierge 운영팀</p>
-              <p>연락처: support@voxcierge.com</p>
+              <p>개인정보 보호책임자: CHUNG MINDY SUMIN</p>
+              <p>소속: 주식회사 스터닝박스</p>
+              <p>전화: 050-6881-1222</p>
+              <p>연락처: recollect@hawoolab.app</p>
             </div>
           </section>
 

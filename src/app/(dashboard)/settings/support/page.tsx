@@ -187,10 +187,10 @@ export default function SupportPage() {
             <div>
               <p className="text-sm font-medium">이메일 문의</p>
               <a
-                href="mailto:support@voxcierge.com"
+                href="mailto:recollect@hawoolab.app"
                 className="text-sm text-primary hover:underline"
               >
-                support@voxcierge.com
+                recollect@hawoolab.app
               </a>
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function SupportPage() {
       <div className="text-center text-xs text-muted-foreground space-y-0.5 pb-2">
         <p className="font-medium text-foreground">VoxCierge</p>
         <p>버전 v1.0.0</p>
-        <p>개발사: VoxCierge Team</p>
+        <p>주식회사 스터닝박스 | hawoolab.app</p>
       </div>
     </div>
   )

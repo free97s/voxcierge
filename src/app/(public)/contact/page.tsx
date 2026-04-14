@@ -82,10 +82,10 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent>
                 <a
-                  href="mailto:support@voxcierge.com"
+                  href="mailto:recollect@hawoolab.app"
                   className="text-sm text-primary hover:underline"
                 >
-                  support@voxcierge.com
+                  recollect@hawoolab.app
                 </a>
                 <CardDescription className="text-xs mt-1">
                   일반 문의 및 기술 지원

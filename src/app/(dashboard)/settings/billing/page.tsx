@@ -94,7 +94,7 @@ export default function BillingPage() {
 
     if (!priceId) {
       // Enterprise: redirect to contact
-      window.location.href = 'mailto:sales@voxcierge.com?subject=Enterprise 플랜 문의'
+      window.location.href = 'mailto:recollect@hawoolab.app?subject=VoxCierge Enterprise 플랜 문의'
       return
     }
 

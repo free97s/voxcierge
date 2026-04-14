@@ -24,7 +24,7 @@ export default function TermsPage() {
         <div className="space-y-8 text-sm leading-relaxed">
 
           <div className="rounded-xl bg-muted/50 p-4 text-muted-foreground">
-            본 이용약관(이하 &ldquo;약관&rdquo;)은 VoxCierge(이하 &ldquo;회사&rdquo;)가 제공하는 서비스의 이용 조건 및 절차에 관한 사항을 규정합니다. 서비스에 가입하거나 이용함으로써 본 약관에 동의한 것으로 간주됩니다.
+            본 이용약관(이하 &ldquo;약관&rdquo;)은 주식회사 스터닝박스(이하 &ldquo;회사&rdquo;)가 제공하는 VoxCierge 서비스의 이용 조건 및 절차에 관한 사항을 규정합니다. 서비스에 가입하거나 이용함으로써 본 약관에 동의한 것으로 간주됩니다.
           </div>
 
           <section>
@@ -148,7 +148,8 @@ export default function TermsPage() {
 
           <div className="border-t pt-6 text-xs text-muted-foreground">
             <p>본 약관은 2026년 4월 15일부터 시행됩니다.</p>
-            <p className="mt-1">문의: support@voxcierge.com</p>
+            <p className="mt-1">문의: recollect@hawoolab.app</p>
+            <p className="mt-0.5">주식회사 스터닝박스 | 대표: CHUNG MINDY SUMIN | 전화: 050-6881-1222</p>
           </div>
 
         </div>

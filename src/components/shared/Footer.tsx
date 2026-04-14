@@ -40,15 +40,16 @@ export function Footer() {
               <span className="font-bold tracking-tight">{siteConfig.name}</span>
             </div>
             <div className="text-xs text-muted-foreground space-y-1">
-              <p>대표: -</p>
-              <p>사업자등록번호: -</p>
+              <p>주식회사 스터닝박스</p>
+              <p>대표: CHUNG MINDY SUMIN</p>
+              <p>전화: 050-6881-1222</p>
               <p>
                 이메일:{' '}
                 <a
-                  href="mailto:support@voxcierge.com"
+                  href="mailto:recollect@hawoolab.app"
                   className="hover:text-foreground transition-colors"
                 >
-                  support@voxcierge.com
+                  recollect@hawoolab.app
                 </a>
               </p>
             </div>
@@ -107,8 +108,8 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-          <p>© 2026 {siteConfig.name}. All rights reserved.</p>
-          <p>말하는 대로 이루어지는 업무의 흐름</p>
+          <p>© 2026 주식회사 스터닝박스. All rights reserved.</p>
+          <p>{siteConfig.name} — 말하는 대로 이루어지는 업무의 흐름</p>
         </div>
       </div>
     </footer>
