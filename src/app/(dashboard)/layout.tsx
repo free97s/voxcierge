@@ -19,6 +19,7 @@ import {
   FlaskConical,
   Sun,
   Moon,
+  BookOpen,
 } from 'lucide-react'
 import { VoiceAssistantModal } from '@/components/voice/VoiceAssistantModal'
 
@@ -54,6 +55,7 @@ const baseNavItems = [
   { href: '/tasks', label: '할일', icon: CheckSquare },
   { href: '/insights', label: '인사이트', icon: BarChart3 },
   { href: '/history', label: '히스토리', icon: Clock },
+  { href: '/diary', label: '일기', icon: BookOpen },
   { href: '/settings', label: '설정', icon: Settings },
 ]
 

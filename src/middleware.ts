@@ -20,7 +20,8 @@ function isProtectedRoute(pathname: string): boolean {
     pathname.startsWith('/settings') ||
     pathname.startsWith('/insights') ||
     pathname.startsWith('/history') ||
-    pathname.startsWith('/briefing')
+    pathname.startsWith('/briefing') ||
+    pathname.startsWith('/diary')
   ) return true
   return false
 }

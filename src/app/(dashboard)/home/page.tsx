@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { AlertCircle, CheckSquare, Mic, Clock, TrendingUp, ListTodo } from 'lucide-react'
+import { AlertCircle, CheckSquare, Mic, Clock, TrendingUp, ListTodo, BookOpen, Sparkles, RefreshCw } from 'lucide-react'
 import { UpcomingEvents } from '@/components/calendar/UpcomingEvents'
+import type { DailyDiary } from '@/types/diary'
+import { MOOD_EMOJI } from '@/components/diary/DiaryCard'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -126,6 +128,128 @@ function useTaskStats() {
   }, [])
 
   return { stats, displayName, isLoading }
+}
+
+// ─── Today's Diary Widget ────────────────────────────────────────────────────
+
+function useTodayDiary() {
+  const [diary, setDiary] = useState<DailyDiary | null | undefined>(undefined)
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  useEffect(() => {
+    const today = new Date().toLocaleDateString('sv-SE')
+    fetch(`/api/diary?date=${today}`)
+      .then(async (res) => {
+        if (res.status === 404) {
+          setDiary(null)
+        } else if (res.ok) {
+          const json = await res.json() as { diary: DailyDiary | null }
+          setDiary(json.diary)
+        }
+      })
+      .catch(() => setDiary(null))
+  }, [])
+
+  const generate = async () => {
+    setIsGenerating(true)
+    try {
+      const today = new Date().toLocaleDateString('sv-SE')
+      const res = await fetch('/api/diary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: today }),
+      })
+      if (res.ok) {
+        const json = await res.json() as { diary: DailyDiary }
+        setDiary(json.diary)
+      }
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  return { diary, isGenerating, generate }
+}
+
+function TodayDiaryWidget() {
+  const { diary, isGenerating, generate } = useTodayDiary()
+
+  // Loading state
+  if (diary === undefined) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <Skeleton className="h-5 w-36" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-3/4" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const moodEmoji = diary?.mood ? MOOD_EMOJI[diary.mood] : null
+  const firstLine = diary?.content.split('\n').find((l) => l.trim()) ?? ''
+  const preview = firstLine.length > 80 ? firstLine.slice(0, 80) + '…' : firstLine
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <BookOpen className="h-4 w-4 text-primary" />
+            오늘의 일기
+            {moodEmoji && <span>{moodEmoji}</span>}
+          </CardTitle>
+          <Badge variant="secondary" className="text-xs gap-1">
+            <Sparkles className="h-3 w-3" />
+            AI 일기
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {diary ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground leading-relaxed">{preview}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs gap-1"
+              render={<Link href="/diary" />}
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              자세히 보기
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3 py-3 text-center">
+            <p className="text-xs text-muted-foreground">
+              오늘 하루를 AI 일기로 정리해보세요.
+            </p>
+            <Button
+              size="sm"
+              className="gap-2 text-xs"
+              onClick={() => void generate()}
+              disabled={isGenerating}
+            >
+              {isGenerating ? (
+                <>
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                  생성 중...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-3.5 w-3.5" />
+                  오늘 일기 만들기
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
 }
 
 function ProgressBar({ value, max }: { value: number; max: number }) {
@@ -304,6 +428,9 @@ export default function HomePage() {
 
       {/* Upcoming Events widget */}
       <UpcomingEvents />
+
+      {/* Today's Diary Widget */}
+      <TodayDiaryWidget />
 
       {/* Quick Actions */}
       <Card>
