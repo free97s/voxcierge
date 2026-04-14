@@ -21,6 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
+import { Footer } from '@/components/shared/Footer'
 
 const features = [
   {
@@ -132,6 +133,18 @@ export default function LandingPage() {
             <span className="font-bold tracking-tight">{siteConfig.name}</span>
           </div>
           <nav className="flex items-center gap-2">
+            <Link
+              href="/features"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'hidden md:inline-flex text-muted-foreground')}
+            >
+              기능
+            </Link>
+            <Link
+              href="/pricing"
+              className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'hidden md:inline-flex text-muted-foreground')}
+            >
+              가격
+            </Link>
             <Link
               href="/login"
               className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
@@ -338,18 +351,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="mx-auto max-w-5xl px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <div className="flex h-5 w-5 items-center justify-center rounded bg-primary text-primary-foreground font-bold text-[10px]">
-              V
-            </div>
-            <span className="font-semibold text-foreground">{siteConfig.name}</span>
-          </div>
-          <p>© 2026 {siteConfig.name}. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
