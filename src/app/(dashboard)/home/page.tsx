@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { AlertCircle, CheckSquare, Mic, Clock, TrendingUp, ListTodo } from 'lucide-react'
+import { UpcomingEvents } from '@/components/calendar/UpcomingEvents'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -300,6 +301,9 @@ export default function HomePage() {
           autoPlay={false}
         />
       )}
+
+      {/* Upcoming Events widget */}
+      <UpcomingEvents />
 
       {/* Quick Actions */}
       <Card>

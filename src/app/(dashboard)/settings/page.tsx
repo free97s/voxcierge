@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { ChevronRight, Bell, User, Globe, CreditCard, Shield } from 'lucide-react'
+import { ChevronRight, Bell, User, Globe, CreditCard, Shield, Calendar } from 'lucide-react'
 
 export default function SettingsPage() {
   const [displayName, setDisplayName] = useState('')
@@ -103,6 +103,29 @@ export default function SettingsPage() {
           <Button size="sm" onClick={handleSaveProfile} disabled={isSavingProfile}>
             {isSavingProfile ? '저장 중...' : '변경 저장'}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Calendar integration */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            캘린더 연동
+          </CardTitle>
+          <CardDescription>Google, Outlook 캘린더를 연결하여 일정을 동기화하세요</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            href="/settings/calendar"
+            className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm hover:bg-muted transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-primary" />
+              <span>캘린더 설정</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
         </CardContent>
       </Card>
 
