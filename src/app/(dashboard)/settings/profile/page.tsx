@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { toast } from 'sonner'
 import {
   User,
   Camera,
@@ -193,7 +194,7 @@ export default function ProfilePage() {
       setAvatarUrl(publicUrl)
     } catch (err) {
       console.error('[ProfilePage] avatar upload error:', err)
-      alert('아바타 업로드에 실패했습니다.')
+      toast.error('아바타 업로드에 실패했습니다.')
     } finally {
       setIsUploadingAvatar(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -240,7 +241,7 @@ export default function ProfilePage() {
       window.location.href = '/'
     } catch (err) {
       console.error('[ProfilePage] delete account error:', err)
-      alert('계정 삭제에 실패했습니다. 고객센터에 문의해 주세요.')
+      toast.error('계정 삭제에 실패했습니다. 고객센터에 문의해 주세요.')
       setIsDeletingAccount(false)
     }
   }
