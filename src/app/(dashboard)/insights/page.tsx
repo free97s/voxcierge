@@ -43,34 +43,28 @@ function mapDbInsight(raw: Record<string, unknown>): Insight {
   }
 }
 
-function buildPatternData(productiveDays: string[]): DayCompletionRate[] {
-  // When we have productive days from AI, map them to chart data
+function buildPatternData(productiveDays: string[], completionRate: number): DayCompletionRate[] {
+  // Use AI-identified productive days and the overall completion rate to build chart data.
+  // Productive days get a rate above the average; others get a rate below it.
+  const avgPct = Math.round(completionRate * 100)
   return DAYS_KO.map((day) => {
     const isProductive = productiveDays.includes(day)
+    const rate = isProductive
+      ? Math.min(100, Math.round(avgPct * 1.3))
+      : Math.max(0, Math.round(avgPct * 0.6))
     return {
       day,
-      rate: isProductive ? 75 + Math.floor(Math.random() * 20) : 30 + Math.floor(Math.random() * 30),
-      completed: isProductive ? 4 : 2,
-      total: 6,
+      rate,
+      completed: isProductive ? Math.ceil(avgPct / 20) : Math.floor(avgPct / 25),
+      total: 5,
     }
   })
 }
 
-function buildHeatmapData(insight: Insight): Record<string, number> {
-  // Build synthetic heatmap data from completionRate + period
-  // In production this would come from task_history
-  const data: Record<string, number> = {}
-  const start = new Date(insight.periodStart)
-  const end = new Date(insight.periodEnd)
-  const rate = insight.completionRate
-
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const key = d.toISOString().slice(0, 10)
-    // Simulate some variance around the completion rate
-    const count = Math.random() < rate ? Math.floor(Math.random() * 5) + 1 : 0
-    if (count > 0) data[key] = count
-  }
-  return data
+function buildHeatmapData(_insight: Insight): Record<string, number> {
+  // Per-day task counts require a separate task_history query not available here.
+  // Return empty so the heatmap shows only real data when the API is extended.
+  return {}
 }
 
 function formatRelativeTime(iso: string): string {
@@ -137,7 +131,7 @@ export default function InsightsPage() {
     }
   }, [])
 
-  const patternData = insight ? buildPatternData(insight.productiveDays) : []
+  const patternData = insight ? buildPatternData(insight.productiveDays, insight.completionRate) : []
   const heatmapData = insight ? buildHeatmapData(insight) : {}
 
   return (
