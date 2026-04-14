@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { ChevronRight, Bell, User, Globe, CreditCard, Shield, Calendar } from 'lucide-react'
+import { ChevronRight, Bell, User, Globe, CreditCard, Shield, Calendar, Headphones } from 'lucide-react'
 
 export default function SettingsPage() {
   const [displayName, setDisplayName] = useState('')
@@ -260,6 +260,29 @@ export default function SettingsPage() {
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </Link>
           ))}
+        </CardContent>
+      </Card>
+
+      {/* Support */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Headphones className="h-4 w-4" />
+            고객센터
+          </CardTitle>
+          <CardDescription>도움말, 문의, FAQ</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link
+            href="/settings/support"
+            className="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm hover:bg-muted transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Headphones className="h-4 w-4 text-primary" />
+              <span>고객센터 바로가기</span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
         </CardContent>
       </Card>
 
