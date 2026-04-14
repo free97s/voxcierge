@@ -74,6 +74,37 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// DELETE /api/diary?cleanup=true → 30일 이전 일기 자동 삭제
+export async function DELETE(request: NextRequest) {
+  try {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const cutoffDate = new Date()
+    cutoffDate.setDate(cutoffDate.getDate() - 30)
+    const cutoff = cutoffDate.toISOString().slice(0, 10)
+
+    const { error, count } = await supabase
+      .from('daily_diaries')
+      .delete()
+      .eq('user_id', user.id)
+      .lt('diary_date', cutoff)
+
+    if (error) {
+      console.error('[DELETE /api/diary] cleanup error:', error)
+      return NextResponse.json({ error: 'Cleanup failed' }, { status: 500 })
+    }
+
+    return NextResponse.json({ deleted: count ?? 0, cutoffDate: cutoff })
+  } catch (err) {
+    console.error('[DELETE /api/diary] unexpected error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 // POST /api/diary { date: '2026-04-15' } → generate or regenerate diary
 export async function POST(request: NextRequest) {
   try {

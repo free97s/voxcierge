@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react'
+import { ChevronLeft, ChevronRight, BookOpen, Download, Trash2, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -76,6 +77,8 @@ export default function DiaryPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isLoadingRecent, setIsLoadingRecent] = useState(true)
+  const [isExporting, setIsExporting] = useState(false)
+  const [isCleaning, setIsCleaning] = useState(false)
 
   // Fetch a single diary by date
   const fetchDiary = useCallback(async (date: string) => {
@@ -141,6 +144,45 @@ export default function DiaryPage() {
     }
   }, [currentDate, fetchRecent])
 
+  // 백업 내보내기 (마크다운)
+  const handleExport = useCallback(async () => {
+    setIsExporting(true)
+    try {
+      const res = await fetch('/api/diary/export?format=markdown')
+      if (!res.ok) throw new Error('Export failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `voxcierge-diary-${toDateString(new Date())}.md`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success('일기장이 다운로드되었습니다')
+    } catch {
+      toast.error('내보내기에 실패했습니다')
+    } finally {
+      setIsExporting(false)
+    }
+  }, [])
+
+  // 30일 이전 일기 정리
+  const handleCleanup = useCallback(async () => {
+    if (!confirm('30일 이전의 일기를 삭제합니다. 먼저 백업하셨나요?')) return
+    setIsCleaning(true)
+    try {
+      const res = await fetch('/api/diary', { method: 'DELETE' })
+      if (res.ok) {
+        const json = await res.json() as { deleted: number }
+        toast.success(`${json.deleted}개의 오래된 일기가 정리되었습니다`)
+        void fetchRecent()
+      }
+    } catch {
+      toast.error('정리에 실패했습니다')
+    } finally {
+      setIsCleaning(false)
+    }
+  }, [fetchRecent])
+
   const goToPrev = () => setCurrentDate((d) => addDays(d, -1))
   const goToNext = () => {
     const next = addDays(currentDate, 1)
@@ -151,12 +193,44 @@ export default function DiaryPage() {
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-3xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-3 pt-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-          <BookOpen className="h-5 w-5 text-primary" />
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+            <BookOpen className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">소설 일기장</h1>
+            <p className="text-xs text-muted-foreground">AI가 써주는 나만의 이야기</p>
+          </div>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">나의 일기</h1>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs gap-1"
+            onClick={() => void handleExport()}
+            disabled={isExporting}
+          >
+            {isExporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+            백업
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs gap-1 text-muted-foreground hover:text-destructive"
+            onClick={() => void handleCleanup()}
+            disabled={isCleaning}
+          >
+            {isCleaning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+            정리
+          </Button>
+        </div>
       </div>
+
+      {/* 30일 보관 안내 */}
+      <p className="text-[11px] text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+        💡 일기는 <strong>30일간</strong> 보관됩니다. 오래된 일기를 보존하려면 <strong>백업</strong> 버튼으로 내보내세요.
+      </p>
 
       {/* Date navigation */}
       <div className="flex items-center justify-between gap-2 rounded-xl border bg-card px-4 py-3">
