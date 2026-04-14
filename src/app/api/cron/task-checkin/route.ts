@@ -41,9 +41,8 @@ interface DbCheckinEvent {
 
 interface DbProfile {
   id: string
-  display_name?: string | null
   full_name?: string | null
-  push_subscriptions?: WebPushSubscription[] | null
+  push_subscription?: WebPushSubscription | null
 }
 
 function dbTaskToTask(row: DbTask): Task {
@@ -121,7 +120,7 @@ export async function GET(request: NextRequest) {
   // Fetch push subscriptions for relevant users
   const { data: rawProfiles } = await supabase
     .from('profiles')
-    .select('id, display_name, full_name, push_subscriptions')
+    .select('id, full_name, push_subscription')
     .in('id', userIds)
 
   const profileMap = new Map<string, DbProfile>(
@@ -171,17 +170,15 @@ export async function GET(request: NextRequest) {
 
       // Send push notification
       const profile = profileMap.get(task.userId)
-      const subscriptions = (profile?.push_subscriptions ?? []) as WebPushSubscription[]
+      const subscription = (profile?.push_subscription ?? null) as WebPushSubscription | null
 
-      if (subscriptions.length > 0) {
-        for (const sub of subscriptions) {
-          await sendPushNotification(sub, {
-            title: '할일 체크인',
-            body: message,
-            url: `/tasks/${task.id}`,
-            tag: `checkin-${task.id}`,
-          })
-        }
+      if (subscription) {
+        await sendPushNotification(subscription, {
+          title: '할일 체크인',
+          body: message,
+          url: `/tasks/${task.id}`,
+          tag: `checkin-${task.id}`,
+        })
       }
 
       results.sent++

@@ -22,9 +22,8 @@ export async function GET(request: NextRequest) {
 
   const { data: profiles, error: profilesError } = await supabase
     .from('profiles')
-    .select('id, display_name, full_name, timezone, briefing_time_evening, push_subscriptions')
+    .select('id, full_name, timezone, briefing_time_evening, push_subscription')
     .eq('briefing_enabled', true)
-    .eq('briefing_evening', true)
 
   if (profilesError) {
     console.error('[cron/evening-briefing] Failed to fetch profiles:', profilesError)
@@ -47,7 +46,7 @@ export async function GET(request: NextRequest) {
         continue
       }
 
-      const userName = profile.display_name ?? profile.full_name ?? '사용자'
+      const userName = profile.full_name ?? '사용자'
 
       const todayStart = new Date(now)
       todayStart.setHours(0, 0, 0, 0)
@@ -112,17 +111,15 @@ export async function GET(request: NextRequest) {
         continue
       }
 
-      const subscriptions = (profile.push_subscriptions ?? []) as WebPushSubscription[]
-      if (subscriptions.length > 0) {
+      const subscription = profile.push_subscription as WebPushSubscription | null
+      if (subscription) {
         const firstLine = content.split('\n').find((l: string) => l.trim()) ?? '오늘의 저녁 브리핑이 준비됐습니다'
-        for (const sub of subscriptions) {
-          await sendPushNotification(sub, {
-            title: `${userName}님의 저녁 브리핑`,
-            body: firstLine.replace(/^#+\s*/, '').slice(0, 100),
-            url: '/home',
-            tag: 'evening-briefing',
-          })
-        }
+        await sendPushNotification(subscription, {
+          title: `${userName}님의 저녁 브리핑`,
+          body: firstLine.replace(/^#+\s*/, '').slice(0, 100),
+          url: '/home',
+          tag: 'evening-briefing',
+        })
       }
 
       results.sent++

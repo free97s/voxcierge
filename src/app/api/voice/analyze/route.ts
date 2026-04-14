@@ -45,20 +45,33 @@ export async function POST(request: NextRequest) {
 
     const intent = await extractIntent(text, userTimezone);
 
+    // Map intentType from AI enum to DB enum
+    // AI: 'add_task'|'complete_task'|'delete_task'|'query_tasks'|'update_task'|'other'
+    // DB: 'task'|'note'|'reminder'|'query'|'unknown'
+    const intentTypeMap: Record<string, string> = {
+      add_task: 'task',
+      complete_task: 'task',
+      delete_task: 'task',
+      update_task: 'task',
+      query_tasks: 'query',
+      other: 'unknown',
+    };
+    const dbIntentType = intentTypeMap[intent.intentType] ?? 'unknown';
+
     // Store result in intent_extractions table
     const { data: extraction, error: insertError } = await supabase
       .from('intent_extractions')
       .insert({
         session_id: sessionId,
         user_id: user.id,
-        intent_type: intent.intentType,
-        action: intent.action,
-        person: intent.person ?? null,
-        place: intent.place ?? null,
-        time_raw: intent.timeRaw ?? null,
-        time_absolute: intent.timeAbsolute ?? null,
+        raw_text: text,
+        intent_type: dbIntentType,
+        extracted_action: intent.action,
+        extracted_person: intent.person ?? null,
+        extracted_place: intent.place ?? null,
+        extracted_time_raw: intent.timeRaw ?? null,
+        extracted_time: intent.timeAbsolute ?? null,
         confidence: intent.confidence,
-        tags: intent.tags,
       })
       .select()
       .single();
