@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Bell, BellOff, Clock, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Card,
   CardContent,
@@ -123,7 +124,7 @@ export default function NotificationsPage() {
       if (!res.ok) throw new Error('Test notification failed')
     } catch (err) {
       console.error('[NotificationsPage] test notification error:', err)
-      alert('테스트 알림 전송에 실패했습니다.')
+      toast.error('테스트 알림 전송에 실패했습니다.')
     } finally {
       setIsTesting(false)
     }

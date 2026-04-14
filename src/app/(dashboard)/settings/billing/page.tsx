@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Check, CreditCard, Loader2, ExternalLink, Zap, Building2, User } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Card,
   CardContent,
@@ -109,7 +110,7 @@ export default function BillingPage() {
       window.location.href = url
     } catch (err) {
       console.error('[BillingPage] checkout error:', err)
-      alert('결제 페이지를 열 수 없습니다. 잠시 후 다시 시도해 주세요.')
+      toast.error('결제 페이지를 열 수 없습니다. 잠시 후 다시 시도해 주세요.')
     } finally {
       setLoadingPriceId(null)
     }
@@ -128,7 +129,7 @@ export default function BillingPage() {
       window.location.href = url
     } catch (err) {
       console.error('[BillingPage] portal error:', err)
-      alert('구독 관리 페이지를 열 수 없습니다. 잘시 후 다시 시도해 주세요.')
+      toast.error('구독 관리 페이지를 열 수 없습니다. 잠시 후 다시 시도해 주세요.')
     } finally {
       setIsLoadingPortal(false)
     }

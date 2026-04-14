@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import {
   Mic, CheckSquare, BarChart3, Bell, CreditCard, Shield, Headphones,
@@ -244,8 +245,8 @@ export default function TestPage() {
             <CardContent>
               <IntentCard
                 intent={mockIntent}
-                onConfirm={(edited) => alert(`✅ 할일 생성 확인!\n\n${JSON.stringify(edited, null, 2)}`)}
-                onDiscard={() => alert('❌ 폐기됨')}
+                onConfirm={(edited) => toast.success(`할일 생성 확인: ${edited.action ?? ''}`)}
+                onDiscard={() => toast.info('폐기됨')}
               />
             </CardContent>
           </Card>
@@ -267,8 +268,8 @@ export default function TestPage() {
                   timeAbsolute: undefined,
                   intentType: 'unknown',
                 }}
-                onConfirm={(edited) => alert(`확인: ${JSON.stringify(edited, null, 2)}`)}
-                onDiscard={() => alert('폐기')}
+                onConfirm={(edited) => toast.success(`확인: ${edited.action ?? ''}`)}
+                onDiscard={() => toast.info('폐기')}
               />
             </CardContent>
           </Card>
@@ -284,8 +285,8 @@ export default function TestPage() {
               <TaskCard
                 key={task.id}
                 task={task}
-                onStatusChange={(t) => alert(`상태 변경: ${t.title} → ${t.status}`)}
-                onEdit={(task) => alert(`편집: ${task.title}`)}
+                onStatusChange={(t) => toast.success(`상태 변경: ${t.title} → ${t.status}`)}
+                onEdit={(task) => toast.info(`편집: ${task.title}`)}
                 onCheckin={(task) => setCheckinTask(task)}
               />
             ))}
@@ -303,8 +304,8 @@ export default function TestPage() {
                 tasks={mockTasks.filter(t => t.status === 'pending' || t.status === 'in_progress')}
                 isLoading={false}
                 emptyMessage="진행 중인 할일이 없습니다."
-                onStatusChange={(t) => alert(`${t.title} → ${t.status}`)}
-                onEdit={(task) => alert(`편집: ${task.title}`)}
+                onStatusChange={(t) => toast.success(`${t.title} → ${t.status}`)}
+                onEdit={(task) => toast.info(`편집: ${task.title}`)}
                 onCheckin={(task) => setCheckinTask(task)}
               />
             </CardContent>
@@ -372,7 +373,7 @@ export default function TestPage() {
                 briefing={mockBriefing}
                 isLoading={false}
                 isGenerating={false}
-                onGenerate={() => alert('브리핑 재생성 요청')}
+                onGenerate={() => toast.info('브리핑 재생성 요청')}
               />
             </CardContent>
           </Card>
@@ -401,7 +402,7 @@ export default function TestPage() {
                 briefing={null}
                 isLoading={false}
                 isGenerating={false}
-                onGenerate={() => alert('브리핑 생성 시작')}
+                onGenerate={() => toast.info('브리핑 생성 시작')}
               />
             </CardContent>
           </Card>
@@ -491,11 +492,11 @@ export default function TestPage() {
                           icon: '/icons/icon-192.png',
                         })
                       } else {
-                        alert('알림 권한이 필요합니다. 브라우저 설정에서 허용해주세요.')
+                        toast.error('알림 권한이 필요합니다. 브라우저 설정에서 허용해주세요.')
                       }
                     })
                   } else {
-                    alert('이 브라우저는 알림을 지원하지 않습니다.')
+                    toast.error('이 브라우저는 알림을 지원하지 않습니다.')
                   }
                 }}
               >

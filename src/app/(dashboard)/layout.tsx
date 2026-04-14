@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import {
   Home,
   Mic,
@@ -13,6 +14,8 @@ import {
   LogOut,
   Menu,
   FlaskConical,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -144,6 +147,11 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
+
+  function toggleTheme() {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+  }
 
   async function handleLogout() {
     const supabase = createClient()
@@ -194,41 +202,70 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          {/* User dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  aria-label="사용자 메뉴"
-                />
-              }
+          <div className="flex items-center gap-1">
+            {/* Dark mode toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label="다크모드 전환"
             >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="" alt="사용자" />
-                <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                  나
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem
-                render={<Link href="/settings" className="flex w-full items-center" />}
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            </Button>
+
+            {/* User dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full"
+                    aria-label="사용자 메뉴"
+                  />
+                }
               >
-                설정
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive cursor-pointer"
-                onClick={handleLogout}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                로그아웃
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="" alt="사용자" />
+                  <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                    나
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem
+                  render={<Link href="/settings" className="flex w-full items-center" />}
+                >
+                  설정
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={toggleTheme}
+                >
+                  {theme === 'dark' ? (
+                    <>
+                      <Sun className="mr-2 h-4 w-4" />
+                      라이트 모드
+                    </>
+                  ) : (
+                    <>
+                      <Moon className="mr-2 h-4 w-4" />
+                      다크 모드
+                    </>
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  로그아웃
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </header>
 
         {/* Page content */}

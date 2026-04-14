@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { mapSupabaseError } from '@/lib/supabase/errors'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -45,7 +46,7 @@ export default function SignupPage() {
     })
 
     if (error) {
-      setError(error.message)
+      setError(mapSupabaseError(error))
       setLoading(false)
       return
     }
