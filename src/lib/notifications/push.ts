@@ -11,8 +11,13 @@ function initVapid() {
     return false
   }
 
-  webpush.setVapidDetails(subject, publicKey, privateKey)
-  return true
+  try {
+    webpush.setVapidDetails(subject, publicKey, privateKey)
+    return true
+  } catch (err) {
+    console.warn('[push] Invalid VAPID keys — push notifications disabled:', err)
+    return false
+  }
 }
 
 const vapidReady = initVapid()

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,14 +32,22 @@ import {
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
-const navItems = [
+const baseNavItems = [
   { href: '/home', label: '홈', icon: Home },
   { href: '/capture', label: '음성캡처', icon: Mic },
   { href: '/tasks', label: '할일', icon: CheckSquare },
   { href: '/insights', label: '인사이트', icon: BarChart3 },
   { href: '/history', label: '히스토리', icon: Clock },
   { href: '/settings', label: '설정', icon: Settings },
+]
+
+const devNavItems = [
   { href: '/test', label: '테스트', icon: FlaskConical },
+]
+
+const navItems = [
+  ...baseNavItems,
+  ...(process.env.NODE_ENV === 'development' ? devNavItems : []),
 ]
 
 function NavLink({
@@ -59,7 +68,7 @@ function NavLink({
       href={href}
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
         active
           ? 'bg-primary text-primary-foreground'
           : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
@@ -71,6 +80,25 @@ function NavLink({
   )
 }
 
+function UserProfileCard() {
+  return (
+    <div className="mx-3 mb-3 flex items-center gap-3 rounded-xl border bg-muted/40 px-3 py-2.5">
+      <Avatar className="h-8 w-8 shrink-0">
+        <AvatarImage src="" alt="사용자" />
+        <AvatarFallback className="text-xs bg-primary text-primary-foreground font-semibold">
+          나
+        </AvatarFallback>
+      </Avatar>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate leading-tight">내 계정</p>
+        <Badge variant="secondary" className="mt-0.5 text-[10px] h-4 px-1.5">
+          Personal
+        </Badge>
+      </div>
+    </div>
+  )
+}
+
 function SidebarContent({
   pathname,
   onNavClick,
@@ -79,14 +107,17 @@ function SidebarContent({
   onNavClick?: () => void
 }) {
   return (
-    <div className="flex h-full flex-col gap-2">
-      <div className="flex h-14 items-center border-b px-4 gap-2">
+    <div className="flex h-full flex-col gap-0">
+      {/* Logo */}
+      <div className="flex h-14 items-center border-b px-4 gap-2 shrink-0">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
           V
         </div>
         <span className="font-bold text-lg tracking-tight">VoxCierge</span>
       </div>
-      <nav className="flex-1 space-y-1 px-3 py-4">
+
+      {/* Nav */}
+      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
             key={item.href}
@@ -98,6 +129,9 @@ function SidebarContent({
           />
         ))}
       </nav>
+
+      {/* User profile mini card */}
+      <UserProfileCard />
     </div>
   )
 }

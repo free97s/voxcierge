@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { AlertCircle, CheckSquare, Mic } from 'lucide-react'
+import { AlertCircle, CheckSquare, Mic, Clock, TrendingUp, ListTodo } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -127,51 +127,103 @@ function useTaskStats() {
   return { stats, displayName, isLoading }
 }
 
+function ProgressBar({ value, max }: { value: number; max: number }) {
+  const pct = max === 0 ? 0 : Math.round((value / max) * 100)
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm text-muted-foreground">완료율</span>
+        <span className="text-sm font-semibold">{pct}%</span>
+      </div>
+      <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  )
+}
+
 export default function HomePage() {
   const { briefing, type, isLoading, isGenerating, error, generateBriefing } = useBriefing()
   const { stats, displayName, isLoading: statsLoading } = useTaskStats()
   const today = formatKoreanDate(new Date())
 
+  const totalTasks = stats ? stats.pending + stats.inProgress + stats.completed : 0
+  const completedTasks = stats?.completed ?? 0
+
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-4xl mx-auto">
+    <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto">
       {/* Greeting */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          안녕하세요, {displayName}님
+      <div className="pt-2">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          안녕하세요, {displayName}님 👋
         </h1>
-        <p className="text-muted-foreground mt-1">{today}</p>
+        <p className="text-muted-foreground mt-1.5 text-sm">{today}</p>
       </div>
 
-      {/* Task Stats */}
+      {/* Bento Grid — stats */}
       {statsLoading ? (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Card className="col-span-2 md:col-span-2">
+            <CardContent className="pt-5 pb-5">
+              <Skeleton className="h-5 w-28 mb-4" />
+              <Skeleton className="h-2.5 w-full rounded-full" />
+            </CardContent>
+          </Card>
           {[0, 1, 2].map((i) => (
-            <Card key={i} className="text-center">
-              <CardContent className="pt-4 pb-4">
-                <Skeleton className="h-8 w-10 mx-auto mb-1" />
-                <Skeleton className="h-3 w-16 mx-auto" />
+            <Card key={i}>
+              <CardContent className="pt-5 pb-5">
+                <Skeleton className="h-8 w-10 mb-2" />
+                <Skeleton className="h-3 w-16" />
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-3">
-          <Card className="text-center">
-            <CardContent className="pt-4 pb-4">
-              <p className="text-2xl font-bold text-primary">{stats?.pending ?? 0}</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {/* Progress card — spans 2 cols */}
+          <Card className="col-span-2 md:col-span-2">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                </div>
+                <CardTitle className="text-sm font-semibold">오늘의 진행률</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <ProgressBar value={completedTasks} max={totalTasks} />
+              <p className="text-xs text-muted-foreground mt-3">
+                전체 {totalTasks}개 중 {completedTasks}개 완료
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Pending */}
+          <Card>
+            <CardHeader className="pb-1">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                <ListTodo className="h-4 w-4 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent className="pt-1">
+              <p className="text-3xl font-bold text-primary">{stats?.pending ?? 0}</p>
               <p className="text-xs text-muted-foreground mt-1">대기 중</p>
             </CardContent>
           </Card>
-          <Card className="text-center">
-            <CardContent className="pt-4 pb-4">
-              <p className="text-2xl font-bold text-amber-500">{stats?.inProgress ?? 0}</p>
+
+          {/* In Progress */}
+          <Card>
+            <CardHeader className="pb-1">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
+                <Clock className="h-4 w-4 text-amber-500" />
+              </div>
+            </CardHeader>
+            <CardContent className="pt-1">
+              <p className="text-3xl font-bold text-amber-500">{stats?.inProgress ?? 0}</p>
               <p className="text-xs text-muted-foreground mt-1">진행 중</p>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardContent className="pt-4 pb-4">
-              <p className="text-2xl font-bold text-green-500">{stats?.completed ?? 0}</p>
-              <p className="text-xs text-muted-foreground mt-1">오늘 완료</p>
             </CardContent>
           </Card>
         </div>
@@ -179,16 +231,16 @@ export default function HomePage() {
 
       {/* Overdue Alert */}
       {stats && stats.overdue.length > 0 && (
-        <Card className="border-destructive/50 bg-destructive/5">
+        <Card className="border-destructive/40 bg-destructive/5">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2 text-destructive">
+            <CardTitle className="text-sm flex items-center gap-2 text-destructive">
               <AlertCircle className="h-4 w-4" />
               기한 초과 할일
-              <Badge variant="destructive" className="ml-auto">
+              <Badge variant="destructive" className="ml-auto text-xs">
                 {stats.overdue.length}개
               </Badge>
             </CardTitle>
-            <CardDescription>마감 기한이 지난 할 일이 있습니다</CardDescription>
+            <CardDescription className="text-xs">마감 기한이 지난 할 일이 있습니다</CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -215,7 +267,7 @@ export default function HomePage() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3 w-full"
+              className="mt-3 w-full text-xs"
               render={<Link href="/tasks?filter=overdue" />}
             >
               전체 보기
@@ -252,14 +304,18 @@ export default function HomePage() {
       {/* Quick Actions */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">빠른 작업</CardTitle>
+          <CardTitle className="text-sm font-semibold">빠른 작업</CardTitle>
         </CardHeader>
         <CardContent className="flex gap-3">
-          <Button className="flex-1 gap-2" render={<Link href="/capture" />}>
+          <Button className="flex-1 gap-2 h-11" render={<Link href="/capture" />}>
             <Mic className="h-4 w-4" />
             음성 캡처
           </Button>
-          <Button variant="outline" className="flex-1 gap-2" render={<Link href="/tasks" />}>
+          <Button
+            variant="outline"
+            className="flex-1 gap-2 h-11"
+            render={<Link href="/tasks" />}
+          >
             <CheckSquare className="h-4 w-4" />
             할일 보기
           </Button>
